@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mi-tonoripozitori</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: sans-serif;
+            background: #202124;
+            color: white;
+        }
+        header {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid #3c4043;
+        }
+        main {
+            min-height: calc(100vh - 128px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        #videos {
+            width: 100%;
+            max-width: 1000px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 12px;
+        }
+        video {
+            width: 100%;
+            background: black;
+            border-radius: 12px;
+        }
+        footer {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        button {
+            padding: 12px 18px;
+            border: 0;
+            border-radius: 24px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <strong>mi-tonoripozitori</strong>
+</header>
+<main>
+    <div id="videos">
+        <video id="localVideo" autoplay playsinline muted></video>
+    </div>
+</main>
+<footer>
+    <button id="cameraButton">カメラ</button>
+    <button id="micButton">マイク</button>
+</footer>
+<script>
+    const localVideo = document.getElementById("localVideo");
+    let stream = null;
+
+    async function startMedia() {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: true
+            });
+            localVideo.srcObject = stream;
+        } catch (error) {
+            console.error("カメラ・マイクの取得に失敗:", error);
+        }
+    }
+
+    document.getElementById("cameraButton").addEventListener("click", () => {
+        if (!stream) return;
+        const track = stream.getVideoTracks()[0];
+        if (track) track.enabled = !track.enabled;
+    });
+
+    document.getElementById("micButton").addEventListener("click", () => {
+        if (!stream) return;
+        const track = stream.getAudioTracks()[0];
+        if (track) track.enabled = !track.enabled;
+    });
+
+    startMedia();
+</script>
+</body>
+</html>
